@@ -1,0 +1,75 @@
+package com.Akarsh.controllers;
+
+import java.io.IOException;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+
+import com.Akarsh.services.ProductService;
+
+@RestController
+@RequestMapping("/api/v1")
+public class ProductController {
+	
+	@Autowired
+	ProductService productService;
+	
+	@PostMapping("/vendor/products")
+	public ResponseEntity<?> addProduct(
+			@RequestPart("productObject") String productObject,
+			@RequestParam("productImage") MultipartFile productImage) throws IOException
+	{
+		return productService.addProduct(productObject, productImage);
+	}
+	
+	@GetMapping("/vendor/products/{vendorId}")
+	public ResponseEntity<?> getProductsByVendorId(@PathVariable("vendorId") long vendorId)
+	{
+		return productService.getProductsByVendorId(vendorId);
+	}
+	
+	@PutMapping("/vendor/products/{vendorId}")
+	public ResponseEntity<?>updateProduct(
+			@RequestPart("productObject") String productObject,
+			@RequestParam("productImage") MultipartFile image,
+			@PathVariable("vendorId") long productId) throws IOException 
+	{
+		return productService.updateProduct(productObject, image, productId);
+	}
+	
+	@GetMapping("/get/products/{productId}")
+	public ResponseEntity<?>getProductById(@PathVariable("productId") long productId){
+		return productService.getProductById(productId);
+	}
+
+	@DeleteMapping("/vendor/products/{productId}")
+	public ResponseEntity<?>deleteProductById(@PathVariable("productId") long productId){
+		return productService.deleteProductById(productId);
+	}
+	
+	@GetMapping("/get/products")
+	public ResponseEntity<?>getAllProducts()
+	{
+		return productService.getAllProducts();
+	}
+	
+	@GetMapping("/get/filtered-products")
+	public ResponseEntity<?>getAllFilteredProducts(
+			@RequestParam(name = "subCategoryName",required = false) String subCategoryName,
+			@RequestParam(name = "categoryName",required = false) String categoryName,
+			@RequestParam(name = "sortDirection",required = false) String sortDirection,
+			@RequestParam(name = "productName",required = false) String productName)
+	{
+		return productService.getAllFilteredProducts(subCategoryName,categoryName,sortDirection,productName);
+	}
+}
